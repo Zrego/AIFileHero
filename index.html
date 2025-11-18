@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#6366f1">
+    <title>AI File Hero</title>
+    
+    <!-- Bootstrap 5 -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.1/font/bootstrap-icons.min.css" rel="stylesheet">
+    
+    <!-- Manifest -->
+    <link rel="manifest" href="#" id="manifest-placeholder">
+    
+    <style>
+        :root {
+            --primary-color: #6366f1;
+            --secondary-color: #8b5cf6;
+            --success-color: #10b981;
+            --danger-color: #ef4444;
+            --warning-color: #f59e0b;
+            --bg-light: #f8fafc;
+            --bg-dark: #1e293b;
+            --text-light: #0f172a;
+            --text-dark: #f1f5f9;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        body.light-theme {
+            background-color: var(--bg-light);
+            color: var(--text-light);
+        }
+
+        body.dark-theme {
+            background-color: var(--bg-dark);
+            color: var(--text-dark);
+        }
+
+        .navbar {
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .dark-theme .navbar {
+            background-color: #0f172a !important;
+        }
+
+        .card {
+            border: none;
+            border-radius: 16px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 12px rgba(0,0,0,0.15);
+        }
+
+        .dark-theme .card {
+            background-color: #334155;
+            color: var(--text-dark);
+        }
+
+        .file-item {
+            padding: 12px;
+            border-radius: 12px;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transition: background-color 0.2s;
+        }
+
+        .light-theme .file-item {
+            background-color: white;
+        }
+
+        .dark-theme .file-item {
+            background-color: #475569;
+        }
+
+        .file-item:hover {
+            background-color: rgba(99, 102, 241, 0.1);
+        }
+
+        .ai-badge {
+            font-size: 0.75rem;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-weight: 600;
+        }
+
+        .badge-important {
+            background-color: var(--success-color);
+            color: white;
+        }
+
+        .badge-unimportant {
+            background-color: var(--danger-color);
+            color: white;
+        }
+
+        .badge-medium {
+            background-color: var(--warning-color);
+            color: white;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            border: none;
+            border-radius: 12px;
+            padding: 10px 20px;
+        }
+
+        .btn-primary:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);
+        }
+
+        .stats-card {
+            text-align: center;
+            padding: 20px;
+            border-radius: 16px;
+            margin-bottom: 15px;
+        }
+
+        .stats-number {
+            font-size: 2rem;
+            font-weight: bold;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .floating-btn {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            border: none;
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);
+            font-size: 1.5rem;
+            z-index: 1000;
+        }
+
+        .ai-analysis {
+            border-left: 4px solid var(--primary-color);
+            padding-left: 16px;
+            margin: 16px 0;
+        }
+
+        .progress {
+            height: 8px;
+            border-radius: 10px;
+        }
+
+        .modal-content {
+            border-radius: 20px;
+        }
+
+        .dark-theme .modal-content {
+            background-color: #334155;
+            color: var(--text-dark);
+        }
+
+        @media (max-width: 768px) {
+            .stats-number {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body class="light-theme">
+
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-white sticky-top">
+        <div class="container-fluid">
+            <a class="navbar-brand fw-bold" href="#">
+                <i class="bi bi-robot text-primary"></i> AI File Hero
+            </a>
+            <div class="d-flex align-items-center">
+                <button class="btn btn-link text-decoration-none" id="themeToggle">
+                    <i class="bi bi-moon-stars fs-5" id="themeIcon"></i>
+                </button>
+                <button class="btn btn-link text-decoration-none" onclick="showInfo()">
+                    <i class="bi bi-info-circle fs-5"></i>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Container -->
+    <div class="container py-4">
+        
+        <!-- Stats Section -->
+        <div class="row mb-4">
+            <div class="col-4">
+                <div class="card stats-card">
+                    <div class="stats-number" id="totalFiles">0</div>
+                    <small class="text-muted">Total File</small>
+                </div>
+            </div>
+            <div class="col-4">
+                <div class="card stats-card">
+                    <div class="stats-number text-success" id="importantFiles">0</div>
+                    <small class="text-muted">Penting</small>
+                </div>
+            </div>
+            <div class="col-4">
+                <div class="card stats-card">
+                    <div class="stats-number text-danger" id="unimportantFiles">0</div>
+                    <small class="text-muted">Tidak Penting</small>
+                </div>
+            </div>
+        </div>
+
+        <!-- AI Analysis Card -->
+        <div class="card mb-4" id="aiAnalysisCard" style="display:none;">
+            <div class="card-body">
+                <h5 class="card-title"><i class="bi bi-cpu text-primary"></i> Analisis AI</h5>
+                <div class="ai-analysis" id="aiAnalysisContent">
+                    <p class="mb-2"><strong>Status:</strong> <span id="aiStatus">Siap menganalisis...</span></p>
+                    <div class="progress mb-2">
+                        <div class="progress-bar progress-bar-striped progress-bar-animated" id="aiProgress" style="width: 0%"></div>
+                    </div>
+                    <small class="text-muted" id="aiRecommendation"></small>
+                </div>
+                <button class="btn btn-sm btn-primary mt-2" onclick="applyAIRecommendation()">
+                    <i class="bi bi-check-circle"></i> Terapkan Rekomendasi
+                </button>
+            </div>
+        </div>
+
+        <!-- File Upload Card -->
+        <div class="card mb-4">
+            <div class="card-body text-center">
+                <i class="bi bi-cloud-upload fs-1 text-primary mb-3"></i>
+                <h5>Upload File untuk Dianalisis</h5>
+                <p class="text-muted">AI akan menganalisis file Anda secara otomatis</p>
+                <input type="file" class="form-control mb-3" id="fileInput" multiple accept="*/*">
+                <button class="btn btn-primary" onclick="analyzeFiles()">
+                    <i class="bi bi-magic"></i> Analisis dengan AI
+                </button>
+            </div>
+        </div>
+
+        <!-- Filter Buttons -->
+        <div class="d-flex gap-2 mb-3 overflow-auto">
+            <button class="btn btn-sm btn-outline-primary active" onclick="filterFiles('all')">
+                <i class="bi bi-file-earmark"></i> Semua
+            </button>
+            <button class="btn btn-sm btn-outline-success" onclick="filterFiles('important')">
+                <i class="bi bi-star-fill"></i> Penting
+            </button>
+            <button class="btn btn-sm btn-outline-danger" onclick="filterFiles('unimportant')">
+                <i class="bi bi-trash"></i> Tidak Penting
+            </button>
+            <button class="btn btn-sm btn-outline-warning" onclick="filterFiles('medium')">
+                <i class="bi bi-dash-circle"></i> Medium
+            </button>
+        </div>
+
+        <!-- File List -->
+        <div id="fileList"></div>
+
+        <!-- Empty State -->
+        <div class="text-center py-5" id="emptyState">
+            <i class="bi bi-folder2-open fs-1 text-muted mb-3"></i>
+            <p class="text-muted">Belum ada file. Upload file untuk memulai!</p>
+        </div>
+
+    </div>
+
+    <!-- Floating Action Button -->
+    <button class="floating-btn" onclick="document.getElementById('fileInput').click()">
+        <i class="bi bi-plus"></i>
+    </button>
+
+    <!-- Info Modal -->
+    <div class="modal fade" id="infoModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header border-0">
+                    <h5 class="modal-title"><i class="bi bi-robot text-primary"></i> Tentang AI File Hero</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <p><strong>AI File Hero</strong> adalah aplikasi manajemen file berbasis AI yang membantu Anda mengorganisir file dengan cerdas.</p>
+                    <h6 class="mt-3">Cara Kerja AI:</h6>
+                    <ul class="small">
+                        <li><strong>Penting:</strong> Dokumen, foto, video penting, file besar</li>
+                        <li><strong>Medium:</strong> File dengan usia dan ukuran sedang</li>
+                        <li><strong>Tidak Penting:</strong> File duplikat, cache, file sementara</li>
+                    </ul>
+                    <p class="small text-muted">AI menganalisis nama, ukuran, tipe, dan karakteristik file untuk memberikan rekomendasi.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        // Data Storage
+        let files = [];
+        let currentFilter = 'all';
+
+        // Theme Management
+        const themeToggle = document.getElementById('themeToggle');
+        const themeIcon = document.getElementById('themeIcon');
+        const body = document.body;
+
+        // Load theme from localStorage
+        const savedTheme = localStorage.getItem('theme') || 'light';
+        body.className = savedTheme + '-theme';
+        updateThemeIcon();
+
+        themeToggle.addEventListener('click', () => {
+            const isLight = body.classList.contains('light-theme');
+            body.className = isLight ? 'dark-theme' : 'light-theme';
+            localStorage.setItem('theme', isLight ? 'dark' : 'light');
+            updateThemeIcon();
+        });
+
+        function updateThemeIcon() {
+            const isDark = body.classList.contains('dark-theme');
+            themeIcon.className = isDark ? 'bi bi-sun fs-5' : 'bi bi-moon-stars fs-5';
+        }
+
+        // AI Analysis Engine
+        function analyzeFileImportance(file) {
+            const fileName = file.name.toLowerCase();
+            const fileSize = file.size;
+            const fileType = file.type;
+            
+            let score = 50; // Base score
+
+            // Type-based scoring
+            if (fileType.includes('image')) score += 15;
+            if (fileType.includes('video')) score += 20;
+            if (fileType.includes('pdf') || fileType.includes('document')) score += 25;
+            if (fileType.includes('audio')) score += 10;
+            
+            // Name-based scoring
+            if (fileName.includes('important') || fileName.includes('penting')) score += 30;
+            if (fileName.includes('backup') || fileName.includes('archive')) score += 20;
+            if (fileName.includes('temp') || fileName.includes('cache')) score -= 40;
+            if (fileName.includes('copy') || fileName.includes('duplicate')) score -= 30;
+            if (fileName.includes('screenshot')) score -= 10;
+            if (fileName.includes('download')) score -= 15;
+            
+            // Size-based scoring
+            if (fileSize > 50 * 1024 * 1024) score += 20; // > 50MB
+            if (fileSize < 100 * 1024) score -= 15; // < 100KB
+            
+            // Extension-based scoring
+            const ext = fileName.split('.').pop();
+            const importantExts = ['pdf', 'docx', 'xlsx', 'pptx', 'jpg', 'png', 'mp4', 'zip'];
+            const unimportantExts = ['tmp', 'log', 'cache', 'bak'];
+            
+            if (importantExts.includes(ext)) score += 10;
+            if (unimportantExts.includes(ext)) score -= 30;
+
+            // Classify based on score
+            if (score >= 70) return 'important';
+            if (score <= 30) return 'unimportant';
+            return 'medium';
+        }
+
+        function formatFileSize(bytes) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return Math.round(bytes / Math.pow(k, i) * 100) / 100 + ' ' + sizes[i];
+        }
+
+        function getFileIcon(type) {
+            if (type.includes('image')) return 'bi-file-image';
+            if (type.includes('video')) return 'bi-file-play';
+            if (type.includes('audio')) return 'bi-file-music';
+            if (type.includes('pdf')) return 'bi-file-pdf';
+            if (type.includes('word') || type.includes('document')) return 'bi-file-word';
+            if (type.includes('excel') || type.includes('spreadsheet')) return 'bi-file-excel';
+            if (type.includes('zip') || type.includes('compressed')) return 'bi-file-zip';
+            return 'bi-file-earmark';
+        }
+
+        async function analyzeFiles() {
+            const fileInput = document.getElementById('fileInput');
+            const uploadedFiles = Array.from(fileInput.files);
+            
+            if (uploadedFiles.length === 0) {
+                alert('Pilih file terlebih dahulu!');
+                return;
+            }
+
+            // Show AI analysis card
+            document.getElementById('aiAnalysisCard').style.display = 'block';
+            document.getElementById('aiStatus').textContent = 'Menganalisis file...';
+            
+            let progress = 0;
+            const progressBar = document.getElementById('aiProgress');
+            
+            for (let i = 0; i < uploadedFiles.length; i++) {
+                const file = uploadedFiles[i];
+                const importance = analyzeFileImportance(file);
+                
+                files.push({
+                    id: Date.now() + i,
+                    name: file.name,
+                    size: file.size,
+                    type: file.type,
+                    importance: importance,
+                    dateAdded: new Date()
+                });
+
+                progress = ((i + 1) / uploadedFiles.length) * 100;
+                progressBar.style.width = progress + '%';
+                
+                // Simulate AI processing time
+                await new Promise(resolve => setTimeout(resolve, 300));
+            }
+
+            document.getElementById('aiStatus').textContent = 'Analisis selesai!';
+            progressBar.classList.remove('progress-bar-animated');
+            
+            generateRecommendation();
+            updateStats();
+            renderFiles();
+            
+            fileInput.value = '';
+            document.getElementById('emptyState').style.display = 'none';
+        }
+
+        function generateRecommendation() {
+            const unimportant = files.filter(f => f.importance === 'unimportant');
+            const totalSize = unimportant.reduce((sum, f) => sum + f.size, 0);
+            
+            const recommendation = document.getElementById('aiRecommendation');
+            if (unimportant.length > 0) {
+                recommendation.innerHTML = `
+                    <i class="bi bi-lightbulb text-warning"></i> 
+                    Ditemukan ${unimportant.length} file tidak penting (${formatFileSize(totalSize)}). 
+                    Hapus untuk menghemat ruang penyimpanan.
+                `;
+            } else {
+                recommendation.innerHTML = `
+                    <i class="bi bi-check-circle text-success"></i> 
+                    Semua file Anda terorganisir dengan baik!
+                `;
+            }
+        }
+
+        function applyAIRecommendation() {
+            if (confirm('Hapus semua file yang tidak penting?')) {
+                files = files.filter(f => f.importance !== 'unimportant');
+                updateStats();
+                renderFiles();
+                alert('File tidak penting berhasil dihapus!');
+            }
+        }
+
+        function updateStats() {
+            document.getElementById('totalFiles').textContent = files.length;
+            document.getElementById('importantFiles').textContent = files.filter(f => f.importance === 'important').length;
+            document.getElementById('unimportantFiles').textContent = files.filter(f => f.importance === 'unimportant').length;
+        }
+
+        function filterFiles(filter) {
+            currentFilter = filter;
+            
+            // Update button states
+            document.querySelectorAll('.btn-outline-primary, .btn-outline-success, .btn-outline-danger, .btn-outline-warning').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            renderFiles();
+        }
+
+        function renderFiles() {
+            const fileList = document.getElementById('fileList');
+            let filteredFiles = files;
+            
+            if (currentFilter !== 'all') {
+                filteredFiles = files.filter(f => f.importance === currentFilter);
+            }
+            
+            if (filteredFiles.length === 0 && files.length > 0) {
+                fileList.innerHTML = '<p class="text-center text-muted">Tidak ada file dalam kategori ini</p>';
+                return;
+            }
+            
+            fileList.innerHTML = filteredFiles.map(file => `
+                <div class="file-item">
+                    <div class="d-flex align-items-center">
+                        <i class="bi ${getFileIcon(file.type)} fs-3 me-3 text-primary"></i>
+                        <div>
+                            <div class="fw-bold">${file.name}</div>
+                            <small class="text-muted">${formatFileSize(file.size)} • ${file.type || 'Unknown'}</small>
+                        </div>
+                    </div>
+                    <div class="d-flex align-items-center gap-2">
+                        <span class="ai-badge badge-${file.importance}">
+                            ${file.importance === 'important' ? 'Penting' : file.importance === 'unimportant' ? 'Tidak Penting' : 'Medium'}
+                        </span>
+                        <button class="btn btn-sm btn-link text-danger" onclick="deleteFile(${file.id})">
+                            <i class="bi bi-trash"></i>
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function deleteFile(id) {
+            if (confirm('Hapus file ini?')) {
+                files = files.filter(f => f.id !== id);
+                updateStats();
+                renderFiles();
+                
+                if (files.length === 0) {
+                    document.getElementById('emptyState').style.display = 'block';
+                    document.getElementById('aiAnalysisCard').style.display = 'none';
+                }
+            }
+        }
+
+        function showInfo() {
+            const modal = new bootstrap.Modal(document.getElementById('infoModal'));
+            modal.show();
+        }
+
+        // Service Worker Registration
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                const swCode = `
+                    const CACHE_NAME = 'ai-file-hero-v1';
+                    const urlsToCache = ['/'];
+                    
+                    self.addEventListener('install', event => {
+                        event.waitUntil(
+                            caches.open(CACHE_NAME)
+                                .then(cache => cache.addAll(urlsToCache))
+                        );
+                    });
+                    
+                    self.addEventListener('fetch', event => {
+                        event.respondWith(
+                            caches.match(event.request)
+                                .then(response => response || fetch(event.request))
+                        );
+                    });
+                `;
+                
+                const blob = new Blob([swCode], { type: 'application/javascript' });
+                const swUrl = URL.createObjectURL(blob);
+                
+                navigator.serviceWorker.register(swUrl)
+                    .then(reg => console.log('Service Worker registered'))
+                    .catch(err => console.log('Service Worker registration failed'));
+            });
+        }
+
+        // Create manifest dynamically
+        const manifest = {
+            name: 'AI File Hero',
+            short_name: 'File Hero',
+            description: 'AI-powered file manager',
+            start_url: '/',
+            display: 'standalone',
+            background_color: '#ffffff',
+            theme_color: '#6366f1',
+            icons: [
+                {
+                    src: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect fill="%236366f1" width="100" height="100" rx="20"/><text x="50" y="70" font-size="60" text-anchor="middle" fill="white">🤖</text></svg>',
+                    sizes: '512x512',
+                    type: 'image/svg+xml'
+                }
+            ]
+        };
+
+        const manifestBlob = new Blob([JSON.stringify(manifest)], { type: 'application/json' });
+        const manifestURL = URL.createObjectURL(manifestBlob);
+        document.getElementById('manifest-placeholder').setAttribute('href', manifestURL);
+    </script>
+
+</body>
+</html>
